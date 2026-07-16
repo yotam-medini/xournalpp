@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.m.n+dev (Unreleased)
+
+* Added "Zoom Draw" tool: click a point on the page to open a magnified popup for drawing fine detail annotations, which are merged back onto the page on confirmation
+
 ## 1.3.6+dev (Unreleased)
 
 ## 1.3.6
