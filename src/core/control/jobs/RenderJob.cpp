@@ -61,7 +61,6 @@ void RenderJob::rerenderRectangle(Rectangle<double> const& rect) {
 }
 
 void RenderJob::run() {
-    g_debug("%s", std::format("yotam {}:{}", __FILE__, __LINE__).c_str());
     this->view->repaintRectMutex.lock();
 
     bool rerenderComplete = std::exchange(this->view->rerenderComplete, false);
@@ -71,7 +70,6 @@ void RenderJob::run() {
     this->view->repaintRectMutex.unlock();
 
     if (rerenderComplete) {
-        g_debug("zoomfit: RenderJob start %p zoom=%.4f", static_cast<void*>(view), view->xournal->getZoom());
         xoj::view::Mask newMask(view->xournal->getDpiScaleFactor(),
                                 Range(0, 0, view->page->getWidth(), view->page->getHeight()), view->xournal->getZoom(),
                                 CAIRO_CONTENT_COLOR_ALPHA);
@@ -81,7 +79,6 @@ void RenderJob::run() {
             std::lock_guard lock(this->view->drawingMutex);
             std::swap(this->view->buffer, newMask);
         }
-        g_debug("zoomfit: RenderJob done %p", static_cast<void*>(view));
         if (sizeChanged) {
             // We do not have any control on what portion of the widget needs to be redrawn. Redraw it all.
             Util::execInUiThread([w = view->xournal->getWidget()]() { gtk_widget_queue_draw(w); });

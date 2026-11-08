@@ -479,7 +479,6 @@ void MainWindow::updateScrollbarSidebarPosition() {
 #else
         gtk_paned_set_start_child(paned, nullptr);
         gtk_paned_set_end_child(paned, nullptr);
-        g_debug("%s", std::format("yotam {}:{}", __FILE__, __LINE__).c_str());
         if (sidebarRight) {
             gtk_paned_set_start_child(paned, mainContent);
             gtk_paned_set_resize_start_child(paned, true);

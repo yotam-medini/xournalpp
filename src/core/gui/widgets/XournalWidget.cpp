@@ -179,7 +179,6 @@ static void gtk_xournal_get_preferred_height(GtkWidget* widget, gint* minimal_he
  * This method is called while scrolling or after the XournalWidget size has changed
  */
 static void gtk_xournal_size_allocate(GtkWidget* widget, GtkAllocation* allocation) {
-    g_debug("%s", std::format("yotam {}:{}", __FILE__, __LINE__).c_str());
     g_return_if_fail(widget != nullptr);
     g_return_if_fail(GTK_IS_XOURNAL(widget));
     g_return_if_fail(allocation != nullptr);
@@ -191,7 +190,6 @@ static void gtk_xournal_size_allocate(GtkWidget* widget, GtkAllocation* allocati
     gtk_widget_set_allocation(widget, allocation);
 
     if (gtk_widget_get_realized(widget)) {
-        g_debug("%s", std::format("yotam {}:{}", __FILE__, __LINE__).c_str());
         gdk_window_move_resize(gtk_widget_get_window(widget), allocation->x, allocation->y, allocation->width,
                                allocation->height);
     }
@@ -205,8 +203,6 @@ static void gtk_xournal_size_allocate(GtkWidget* widget, GtkAllocation* allocati
     if (sizeChanged) {
         gtk_widget_queue_draw(widget);
     }
-    g_debug("%s", std::format("yotam {}:{} sizeChanged={}",
-       __FILE__, __LINE__, sizeChanged).c_str());
 }
 
 static void gtk_xournal_realize(GtkWidget* widget) {
@@ -236,7 +232,6 @@ static void gtk_xournal_realize(GtkWidget* widget) {
     GdkWindow* win = gdk_window_new(gtk_widget_get_parent_window(widget), &attributes, attributes_mask);
     gtk_widget_set_window(widget, win);
     gtk_widget_register_window(widget, win);
-    g_debug("%s", std::format("yotam {}:{}", __FILE__, __LINE__).c_str());
 }
 
 static void gtk_xournal_draw_shadow(GtkXournal* xournal, cairo_t* cr, int left, int top, int width, int height,
@@ -269,7 +264,6 @@ void gtk_xournal_repaint_area(GtkWidget* widget, int x1, int y1, int x2, int y2)
     if (!rg.isValid()) {
         return;
     }
-    g_debug("%s", std::format("yotam {}:{}", __FILE__, __LINE__).c_str());
 
     Range visible(xoj::util::Rectangle<double>(gtk_adjustment_get_value(GTK_XOURNAL(widget)->hadjustment),
                                                gtk_adjustment_get_value(GTK_XOURNAL(widget)->vadjustment),
@@ -287,10 +281,7 @@ void gtk_xournal_repaint_area(GtkWidget* widget, int x1, int y1, int x2, int y2)
     int width = ceil_cast<int>(rg.maxX) - minX;
     int height = ceil_cast<int>(rg.maxY) - minY;
 
-    g_debug("zoomfit: repaint_area queue_draw_area x=%d y=%d w=%d h=%d (visible=[%.0f,%.0f .. %.0f,%.0f])", minX, minY,
-            width, height, visible.minX, visible.minY, visible.maxX, visible.maxY);
     gtk_widget_queue_draw_area(widget, minX, minY, width, height);
-    g_debug("%s", std::format("yotam {}:{}", __FILE__, __LINE__).c_str());
 }
 
 static auto gtk_xournal_draw(GtkWidget* widget, cairo_t* cr) -> gboolean {
@@ -364,7 +355,6 @@ static auto gtk_xournal_draw(GtkWidget* widget, cairo_t* cr) -> gboolean {
         recolor->recolorCurrentCairoRegion(cr);
     }
 
-    // g_debug("%s", std::format("yotam {}:{}", __FILE__, __LINE__).c_str());
     return true;
 }
 

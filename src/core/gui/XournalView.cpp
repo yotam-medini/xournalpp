@@ -558,7 +558,6 @@ void XournalView::ensureRectIsVisible(int x, int y, int width, int height) {
 
 void XournalView::zoomChanged() {
     ZoomControl* zoom = control->getZoomControl();
-    g_debug("zoomfit: XournalView::zoomChanged zoom=%.4f", zoom->getZoom());
     this->getLayout()->recomputeCenteringPadding();
 
     if (zoom->isZoomPresentationMode()) {

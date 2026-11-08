@@ -140,7 +140,6 @@ void Scheduler::unblockRerenderZoom() {
 auto Scheduler::jobRenderThreadTimer(Scheduler* scheduler) -> bool {
     scheduler->jobRenderThreadTimerId = 0;
     scheduler->blockRenderZoomTime = 0;
-    g_debug("zoomfit: Scheduler render-block timer fired");
 
     {
         // Take the queue mutex before notifying: the job thread holds it from the moment it decides to wait until
@@ -193,7 +192,6 @@ auto Scheduler::jobThreadCallback(Scheduler* scheduler) -> gpointer {
                 schedulerLock.unlock();
 
                 if (hasOnlyRenderJobs) {
-                    g_debug("zoomfit: Scheduler waits for render unblock in %" G_GINT64_FORMAT " ms", diff);
                     if (auto id = scheduler->jobRenderThreadTimerId.exchange(g_timeout_add(
                                 static_cast<guint>(diff), xoj::util::wrap_for_once_v<jobRenderThreadTimer>, scheduler));
                         id != 0) {
