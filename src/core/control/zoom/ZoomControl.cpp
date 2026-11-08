@@ -1,4 +1,5 @@
 #include "ZoomControl.h"
+#include <format>
 
 #include <algorithm>  // for find, max
 #include <cmath>      // for isfinite
@@ -220,17 +221,39 @@ void ZoomControl::initZoomHandler(GtkWidget* window, GtkWidget* widget, XournalV
     g_signal_connect(widget, "event", xoj::util::wrap_for_g_callback_v<onTouchpadPinchEvent>, this);
     g_signal_connect(v->getScrollHandling()->getHorizontal(), "notify::page-size",
                      G_CALLBACK(+[](GObject*, GParamSpec*, gpointer self) {
-                         static_cast<ZoomControl*>(self)->updateZoomFitValue();
-                         static_cast<ZoomControl*>(self)->updateZoomPresentationValue();
+                         static_cast<ZoomControl*>(self)->scheduleZoomFitUpdate();
                      }),
                      this);
     g_signal_connect(v->getScrollHandling()->getVertical(), "notify::page-size",
                      G_CALLBACK(+[](GObject*, GParamSpec*, gpointer self) {
-                         static_cast<ZoomControl*>(self)->updateZoomPresentationValue();
+                         static_cast<ZoomControl*>(self)->scheduleZoomFitUpdate();
                      }),
                      this);
 
     registerListener(this->control);
+}
+
+ZoomControl::~ZoomControl() {
+    if (zoomFitUpdateIdleId != 0) {
+        g_source_remove(zoomFitUpdateIdleId);
+    }
+}
+
+void ZoomControl::scheduleZoomFitUpdate() {
+    if (zoomFitUpdateIdleId != 0) {
+        return;  // already scheduled: coalesce
+    }
+    zoomFitUpdateIdleId = g_idle_add_full(
+            G_PRIORITY_DEFAULT_IDLE,
+            +[](gpointer data) -> gboolean {
+                auto* self = static_cast<ZoomControl*>(data);
+                self->zoomFitUpdateIdleId = 0;
+                g_debug("zoomfit: deferred update");
+                self->updateZoomFitValue();
+                self->updateZoomPresentationValue();
+                return G_SOURCE_REMOVE;
+            },
+            this, nullptr);
 }
 
 void ZoomControl::fireZoomChanged() {
@@ -282,14 +305,25 @@ auto ZoomControl::updateZoomFitValue(size_t pageNo) -> bool {
         pageNo = view->getCurrentPage();
     }
     XojPageView* page = view->getViewFor(pageNo);
+    g_debug("%s", std::format(
+      "yotam: pageNo={}, page?={}", pageNo, !!page).c_str());
+
     if (!page) {  // no page
         return false;
     }
 
     Rectangle widget_rect = getVisibleRect();
     double zoom_fit_width = widget_rect.width / (page->getWidth() + 20.0);
+    double zoom_fit_height = widget_rect.height / (page->getHeight() + 20.0);
+    g_debug("%s", std::format("yotam: rect={}x{}, page={}x{}, zoom={}x{}",
+      widget_rect.width, widget_rect.height, page->getWidth(), page->getHeight(),
+      zoom_fit_width, zoom_fit_height).c_str());
+    auto zoom_fit = std::min(zoom_fit_width, zoom_fit_height);
 
-    this->zoomFitValue = std::clamp(zoom_fit_width, this->zoomMin, this->zoomMax);
+    this->zoomFitValue = std::clamp(zoom_fit, this->zoomMin, this->zoomMax);
+    g_debug("%s", std::format("yotam: fit={}, min={}, max={}",
+      zoomFitValue, zoomMin, zoomMax).c_str());
+
     fireZoomRangeValueChanged();
     if (this->isZoomFitMode() && !this->zoomPresentationMode) {
         this->zoomFit();
@@ -337,6 +371,8 @@ void ZoomControl::zoom100() {
 }
 
 void ZoomControl::zoomFit() {
+    g_debug("zoomfit: zoomFit() fitMode=%d (flag=%d) presentation=%d fittingNow=%d zoom=%.4f fitValue=%.4f",
+            isZoomFitMode(), zoomFitMode, zoomPresentationMode, isZoomFittingNow, zoom, zoomFitValue);
     // TODO: properly fix the zoom fit infinite recursion
     if (this->isZoomFittingNow) {
         return;
@@ -360,6 +396,7 @@ void ZoomControl::zoomPresentation() {
 }
 
 void ZoomControl::setZoomFitMode(bool isZoomFitMode) {
+    g_debug("zoomfit: setZoomFitMode(%d) (was %d)", isZoomFitMode, zoomFitMode);
     if (this->zoomFitMode != isZoomFitMode) {
         this->zoomFitMode = isZoomFitMode;
         this->control->getActionDatabase()->setActionState(Action::ZOOM_FIT, this->zoomFitMode);
@@ -396,6 +433,7 @@ void ZoomControl::setZoomStep(double zoomStep) { this->zoomStep = zoomStep; }
 void ZoomControl::setZoomStepScroll(double zoomStep) { this->zoomStepScroll = zoomStep; }
 
 void ZoomControl::pageSizeChanged(size_t page) {
+    g_debug("yotam: pageSizeChanged");
     updateZoomPresentationValue(page);
     updateZoomFitValue(page);
 }
@@ -412,5 +450,6 @@ void ZoomControl::pageSelected(size_t page) {
     if (view->isPageVisible(this->last_page, nullptr)) {
         return;
     }
+    g_debug("pageSelected");
     updateZoomFitValue(this->current_page);
 }

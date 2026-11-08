@@ -1108,6 +1108,8 @@ auto XojPageView::paintPage(cairo_t* cr, GdkRectangle* rect) -> bool {
         }
 
         if (this->buffer.getZoom() != zoom) {
+            g_debug("zoomfit: paintPage %p buffer zoom=%.4f != zoom=%.4f -> rerenderPage", static_cast<void*>(this),
+                    this->buffer.getZoom(), zoom);
             rerenderPage();
             cairo_pattern_set_filter(cairo_get_source(cr), CAIRO_FILTER_FAST);
         }

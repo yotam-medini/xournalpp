@@ -438,6 +438,7 @@ struct ActionProperties<Action::ZOOM_FIT> {
         bool enabled = g_variant_get_boolean(p);
         Util::execInUiThread([enabled, zoom = ctrl->getZoomControl()]() {
             if (enabled) {
+                g_debug("yotam callback -> updateZoomFitValue");
                 zoom->updateZoomFitValue();
             }
             // enable/disable ZoomFit

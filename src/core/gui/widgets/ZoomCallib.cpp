@@ -9,6 +9,7 @@
  * @license GPL
  */
 #include "ZoomCallib.h"
+#include <format>
 
 #include <cairo.h>    // for cairo_set_source_rgb, cairo_fill, cairo_move_to
 #include <gdk/gdk.h>  // for GdkWindowAttr, gdk_window_move_resize, gdk_wind...
@@ -72,6 +73,7 @@ static void zoomcallib_realize(GtkWidget* widget) {
     GdkWindowAttr attributes;
     GtkAllocation allocation;
 
+    g_debug("%s", std::format("yotam {}:{}", __FILE__, __LINE__).c_str());
     g_return_if_fail(widget != nullptr);
     g_return_if_fail(IS_ZOOM_CALLIB(widget));
 
@@ -94,9 +96,11 @@ static void zoomcallib_realize(GtkWidget* widget) {
     gtk_widget_set_window(widget, gdk_window_new(gtk_widget_get_parent_window(widget), &attributes, attributes_mask));
 
     gdk_window_set_user_data(gtk_widget_get_window(widget), widget);
+    g_debug("%s", std::format("yotam {}:{}", __FILE__, __LINE__).c_str());
 }
 
 static auto zoomcallib_draw(GtkWidget* widget, cairo_t* cr) -> gboolean {
+    g_debug("%s", std::format("yotam {}:{}", __FILE__, __LINE__).c_str());
     if (!IS_ZOOM_CALLIB(widget)) {
         g_message("zoomcallib_draw without a ZoomCallib");
     }
@@ -151,5 +155,6 @@ static auto zoomcallib_draw(GtkWidget* widget, cairo_t* cr) -> gboolean {
         }
     }
 
+    g_debug("%s", std::format("yotam {}:{}", __FILE__, __LINE__).c_str());
     return true;
 }

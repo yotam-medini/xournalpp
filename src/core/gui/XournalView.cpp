@@ -558,9 +558,14 @@ void XournalView::ensureRectIsVisible(int x, int y, int width, int height) {
 
 void XournalView::zoomChanged() {
     ZoomControl* zoom = control->getZoomControl();
+    g_debug("zoomfit: XournalView::zoomChanged zoom=%.4f", zoom->getZoom());
     this->getLayout()->recomputeCenteringPadding();
 
     if (zoom->isZoomPresentationMode()) {
+        scrollTo(this->getCurrentPage());
+    } else if (zoom->isZoomFitMode()) {
+        // Zoom-to-fit: keep the current page entirely in view. Preserving the old scroll position (below) leaves
+        // the page shifted, so that part of it is cut off, after the window got smaller.
         scrollTo(this->getCurrentPage());
     } else if (zoom->isZoomSequenceActive()) {
         auto pos = zoom->getScrollPositionAfterZoom();
