@@ -86,6 +86,7 @@ ButtonConfigGui::ButtonConfigGui(GladeSearchpath* gladeSearchPath, GtkBox* box, 
     addTypeCB("vertical-space", _("Vertical space"), TOOL_VERTICAL_SPACE);
     addTypeCB("select-lasso", _("Select region"), TOOL_SELECT_REGION);
     addTypeCB("select-rect", _("Select rectangle"), TOOL_SELECT_RECT);
+    // addTypeCB("zoom-rect", _("Zoom to rectangle"), TOOL_ZOOM_RECT);
     addTypeCB("select-multilayer-lasso", _("Select multi layer region"), TOOL_SELECT_MULTILAYER_REGION);
     addTypeCB("select-multilayer-rect", _("Select multi layer rect"), TOOL_SELECT_MULTILAYER_RECT);
     addTypeCB("hand", _("Hand"), TOOL_HAND);

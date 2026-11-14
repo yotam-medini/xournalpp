@@ -464,6 +464,14 @@ struct ActionProperties<Action::ZOOM> {
     }
 };
 
+#if 1
+template <>
+struct ActionProperties<Action::TOOL_ZOOM_RECT> {
+    static void callback(GSimpleAction* ga, GVariant* p, Control* ctrl) {
+    }
+};
+#endif
+
 /** Navigation menu **/
 template <>
 struct ActionProperties<Action::GOTO_FIRST> {

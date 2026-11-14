@@ -428,6 +428,7 @@ void ToolMenuHandler::initToolItems() {
                                 "select-lasso", _("Select Region"));
     emplaceCustomItemWithTarget("SELECT_RECTANGLE", Cat::SELECTION, Action::SELECT_TOOL, TOOL_SELECT_RECT,
                                 "select-rect", _("Select Rectangle"));
+    emplaceCustomItemTgl("ZOOM_RECT", Cat::TOOLS, Action::TOOL_ZOOM_RECT, "zoom-rect", _("Zoom to Rectangle"));
     emplaceCustomItemWithTarget("SELECT_MULTILAYER_REGION", Cat::SELECTION, Action::SELECT_TOOL,
                                 TOOL_SELECT_MULTILAYER_REGION, "select-multilayer-lasso",
                                 _("Select Multi-Layer Region"));
