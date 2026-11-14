@@ -145,6 +145,8 @@ void ToolHandler::initTools() {
 
     tools[TOOL_LINK - TOOL_PEN] = std::make_unique<Tool>("link", TOOL_LINK, Colors::black, std::nullopt);
 
+    tools[TOOL_ZOOM_RECT - TOOL_PEN] = std::make_unique<Tool>("zoomRect", TOOL_ZOOM_RECT, Colors::black, std::nullopt);
+
     this->toolbarSelectedTool = &getTool(TOOL_PEN);
     this->activeTool = &getTool(TOOL_PEN);
 }
