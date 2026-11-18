@@ -464,7 +464,7 @@ struct ActionProperties<Action::ZOOM> {
     }
 };
 
-#if 1
+#if 0
 template <>
 struct ActionProperties<Action::TOOL_ZOOM_RECT> {
     static void callback(GSimpleAction* ga, GVariant* p, Control* ctrl) {

@@ -396,8 +396,8 @@ void ToolMenuHandler::initToolItems() {
 
     emplaceCustomItemWithTarget("TEXT", Cat::TOOLS, Action::SELECT_TOOL, TOOL_TEXT, "tool-text", _("Text"));
     emplaceCustomItemWithTarget("LINK", Cat::TOOLS, Action::SELECT_TOOL, TOOL_LINK, "tool-link", _("Add/Edit Link"));
-    emplaceCustomItemWithTarget("MATH_TEX", Cat::TOOLS, Action::SELECT_TOOL, TOOL_LATEX, "tool-math-tex",
-                                _("Add/Edit TeX"));
+    emplaceCustomItemWithTarget("MATH_TEX", Cat::TOOLS, Action::SELECT_TOOL, TOOL_LATEX, "tool-math-tex", _("Add/Edit TeX"));
+    emplaceCustomItemWithTarget("ZOOM_RECT", Cat::TOOLS, Action::SELECT_TOOL, TOOL_ZOOM_RECT, "zoom-rect", _("Zoom to Rectangle"));
     emplaceCustomItemWithTarget("IMAGE", Cat::TOOLS, Action::SELECT_TOOL, TOOL_IMAGE, "tool-image", _("Image"));
     emplaceCustomItem("DEFAULT_TOOL", Cat::TOOLS, Action::SELECT_DEFAULT_TOOL, "default", _("Default Tool"));
     emplaceCustomItemWithTarget("SELECT_PDF_TEXT_LINEAR", Cat::SELECTION, Action::SELECT_TOOL,
@@ -428,7 +428,6 @@ void ToolMenuHandler::initToolItems() {
                                 "select-lasso", _("Select Region"));
     emplaceCustomItemWithTarget("SELECT_RECTANGLE", Cat::SELECTION, Action::SELECT_TOOL, TOOL_SELECT_RECT,
                                 "select-rect", _("Select Rectangle"));
-    emplaceCustomItemTgl("ZOOM_RECT", Cat::TOOLS, Action::TOOL_ZOOM_RECT, "zoom-rect", _("Zoom to Rectangle"));
     emplaceCustomItemWithTarget("SELECT_MULTILAYER_REGION", Cat::SELECTION, Action::SELECT_TOOL,
                                 TOOL_SELECT_MULTILAYER_REGION, "select-multilayer-lasso",
                                 _("Select Multi-Layer Region"));

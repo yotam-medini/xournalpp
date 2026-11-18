@@ -133,7 +133,7 @@ static constexpr auto makeToolCaps() {
     caps[TOOL_LASER_POINTER_HIGHLIGHTER - TOOL_PEN] = TOOL_CAP_COLOR | TOOL_CAP_SIZE;
     caps[TOOL_LINK - TOOL_PEN] = TOOL_CAP_NONE;
     caps[TOOL_LATEX - TOOL_PEN] = TOOL_CAP_COLOR;
-    caps[TOOL_ZOOM_RECT - TOOL_PEN] = TOOL_NONE;
+    caps[TOOL_ZOOM_RECT - TOOL_PEN] = TOOL_CAP_NONE;
 
     return caps;
 }
