@@ -203,6 +203,8 @@ auto ToolbarCustomizeDialog::buildToolDataVector(const std::vector<std::unique_p
         GtkWidget* icon = item->getNewToolIcon(); /* floating */
         xoj_assert(icon);
 
+g_message("customize item: '%s' cat=%d", item->getToolDisplayName().c_str(), (int)item->getCategory());
+
         GtkBox* box = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 2));
         gtk_box_append(box, icon);
         gtk_box_append(box, gtk_label_new(name.c_str()));

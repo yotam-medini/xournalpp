@@ -2,7 +2,9 @@
 
 #include <utility>  // for move
 
-AbstractToolItem::AbstractToolItem(std::string id, Category cat): id(std::move(id)), category(cat) {}
+AbstractToolItem::AbstractToolItem(std::string id, Category cat): id(std::move(id)), category(cat) {
+  g_debug("%s:%d yotam id=%s\n", __FILE__, __LINE__, id.c_str());
+}
 
 AbstractToolItem::~AbstractToolItem() = default;
 

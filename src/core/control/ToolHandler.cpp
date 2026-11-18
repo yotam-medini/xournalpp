@@ -194,10 +194,15 @@ void ToolHandler::selectTool(ToolType type) {
     // if called after this method
     // to result in the correct Button shown as active
     this->activeTool = this->toolbarSelectedTool;
+    g_debug("yotam %s:%d activeTool=%s\n",
+      __FILE__, __LINE__, activeTool->getName().c_str());
 }
 
 void ToolHandler::fireToolChanged() const {
-    for (auto&& listener: this->toolChangeListeners) { listener(this->activeTool->type); }
+    g_debug("yotam; #(listeners)=%d\n", int(toolChangeListeners.size()));
+    for (auto&& listener: this->toolChangeListeners) {
+      listener(this->activeTool->type);
+    }
 
     stateChangeListener->toolChanged();
 }

@@ -8,6 +8,7 @@ Tool::Tool(std::string name, ToolType type, Color color, std::optional<std::arra
         type{type},
         thickness{std::move(thickness)},
         capabilities{xoj::tool::typeToCapabilities(type)} {
+    g_debug("%s:%d name=%s\n", __FILE__, __LINE__, name.c_str());
     setColor(color);
 }
 

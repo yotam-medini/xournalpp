@@ -25,6 +25,7 @@
 #include "InputUtils.h"    // for InputUtils
 
 TouchDrawingInputHandler::TouchDrawingInputHandler(InputContext* inputContext): PenInputHandler(inputContext) {
+    g_debug("yotam %s:%d\n", __FILE__, __LINE__);
     inputContext->getToolHandler()->addToolChangedListener([&](ToolType newToolType) {
         InputDeviceClass touchscreenClass =
                 DeviceListHelper::getSourceMapping(GDK_SOURCE_TOUCHSCREEN, this->inputContext->getSettings());
