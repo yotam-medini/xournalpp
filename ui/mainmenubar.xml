@@ -635,6 +635,11 @@
      <attribute name="accel">&lt;Ctrl&gt;&lt;Shift&gt;r</attribute>
     </item>
     <item>
+     <attribute name="label" translatable="yes">Zoom to Rectangle</attribute>
+     <attribute name="action">win.select-tool</attribute>
+     <attribute name="target" type="t">27</attribute> <!-- TOOL_ZOOM_RECT -->
+    </item>
+    <item>
      <attribute name="label" translatable="yes">Select Region</attribute>
      <attribute name="action">win.select-tool</attribute>
      <attribute name="target" type="t">7</attribute> <!-- TOOL_SELECT_REGION -->
