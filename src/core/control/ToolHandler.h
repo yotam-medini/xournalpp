@@ -275,6 +275,13 @@ public:
     Tool* getActiveTool() const;
 
     /**
+     * @brief Get the previous active Tool.
+     *
+     * @return Tool*
+     */
+    Tool* getPreviousActiveTool() const { return previousActiveTool; }
+
+    /**
      * @brief Set the Eraser Type of the Eraser in the toolbar
      * @note Here the Eraser Tool in the toolbar is changed regardless of the the tool currently selected.
      * This is necessary to allow users to change the Eraser type for their Button Tools while having another tool
@@ -408,8 +415,18 @@ private:
      */
     Tool* getSelectedTool(SelectedTool selectedTool) const;
 
+    /**
+     * @brief Set the active Tool and save current as previous
+     *
+     * @param tool
+     */
+    void setActiveTool(Tool* tool);
+
     // active Tool which is used for drawing
     Tool* activeTool = nullptr;
+
+    // previous active Tool, in case we want to return to
+    Tool* previousActiveTool = nullptr;
 
     // tool which is selected in the toolbar
     Tool* toolbarSelectedTool = nullptr;

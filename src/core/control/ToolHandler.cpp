@@ -193,7 +193,7 @@ void ToolHandler::selectTool(ToolType type) {
     // set activeTool is necessary for fireToolChanged()
     // if called after this method
     // to result in the correct Button shown as active
-    this->activeTool = this->toolbarSelectedTool;
+    setActiveTool(toolbarSelectedTool);
     g_debug("yotam %s:%d activeTool=%s\n",
       __FILE__, __LINE__, activeTool->getName().c_str());
 }
@@ -522,7 +522,7 @@ void ToolHandler::loadSettings() {
             SElement& st = s.child(tool->getName());
 
             if (selectedTool == tool->getName()) {
-                this->activeTool = tool.get();
+                setActiveTool(tool.get());
             }
 
             int iColor{};
@@ -601,7 +601,7 @@ bool ToolHandler::pointActiveToolToButtonTool(Button button) {
     if (!tool || this->activeTool == tool) {
         return false;
     }
-    this->activeTool = tool;
+    setActiveTool(tool);
     return true;
 }
 
@@ -753,4 +753,9 @@ void ToolHandler::resetButtonTool(ToolType type, Button button) {
         default:
             g_error("This button is not defined for ToolHandler.");
     }
+}
+
+void ToolHandler::setActiveTool(Tool* tool) {
+    previousActiveTool = activeTool;
+    activeTool = tool;
 }
