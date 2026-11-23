@@ -238,6 +238,7 @@ auto XojPageView::onButtonPressEvent(const PositionInputData& pos) -> bool {
     }
 
     ToolHandler* h = control->getToolHandler();
+    const auto hToolType = h->getToolType();
 
     double x = pos.x;
     double y = pos.y;
@@ -253,9 +254,9 @@ auto XojPageView::onButtonPressEvent(const PositionInputData& pos) -> bool {
     XournalppCursor* cursor = xournal->getCursor();
     cursor->setMouseDown(true);
 
-    if (((h->getToolType() == TOOL_PEN || h->getToolType() == TOOL_HIGHLIGHTER) &&
+    if (((hToolType == TOOL_PEN || hToolType == TOOL_HIGHLIGHTER) &&
          h->getDrawingType() != DRAWING_TYPE_SPLINE) ||
-        (h->getToolType() == TOOL_ERASER && h->getEraserType() == ERASER_TYPE_WHITEOUT)) {
+        (hToolType == TOOL_ERASER && h->getEraserType() == ERASER_TYPE_WHITEOUT)) {
 
         if (this->inputHandler) {
             /**
@@ -295,7 +296,7 @@ auto XojPageView::onButtonPressEvent(const PositionInputData& pos) -> bool {
         this->inputHandler->onButtonPressEvent(pos, zoom);
         this->overlayViews.emplace_back(this->inputHandler->createView(this));
 
-    } else if ((h->getToolType() == TOOL_PEN || h->getToolType() == TOOL_HIGHLIGHTER) &&
+    } else if ((hToolType == TOOL_PEN || hToolType == TOOL_HIGHLIGHTER) &&
                h->getDrawingType() == DRAWING_TYPE_SPLINE) {
         if (!this->inputHandler) {
             this->inputHandler = std::make_unique<SplineHandler>(this->xournal->getControl(), getPage());
@@ -304,10 +305,10 @@ auto XojPageView::onButtonPressEvent(const PositionInputData& pos) -> bool {
         } else {
             this->inputHandler->onButtonPressEvent(pos, zoom);
         }
-    } else if (h->getToolType() == TOOL_ERASER) {
+    } else if (hToolType == TOOL_ERASER) {
         this->eraser->erase(x, y);
         this->inEraser = true;
-    } else if (h->getToolType() == TOOL_LASER_POINTER_PEN || h->getToolType() == TOOL_LASER_POINTER_HIGHLIGHTER) {
+    } else if (hToolType == TOOL_LASER_POINTER_PEN || hToolType == TOOL_LASER_POINTER_HIGHLIGHTER) {
         if (!this->laserPointer) {
             this->laserPointer = std::make_unique<LaserPointerHandler>(this, control, getPage());
             this->laserPointer->onButtonPressEvent(pos, zoom);
@@ -315,7 +316,7 @@ auto XojPageView::onButtonPressEvent(const PositionInputData& pos) -> bool {
         } else {
             this->laserPointer->onButtonPressEvent(pos, zoom);
         }
-    } else if (h->getToolType() == TOOL_VERTICAL_SPACE) {
+    } else if (hToolType == TOOL_VERTICAL_SPACE) {
         if (this->verticalSpace) {
             control->getUndoRedoHandler()->addUndoAction(this->verticalSpace->finalize());
             this->verticalSpace.reset();
@@ -324,11 +325,20 @@ auto XojPageView::onButtonPressEvent(const PositionInputData& pos) -> bool {
         this->verticalSpace = std::make_unique<VerticalToolHandler>(this->page, this->getXournal()->getControl(), y,
                                                                     pos.isControlDown());
         this->overlayViews.emplace_back(this->verticalSpace->createView(this, zoomControl, this->settings));
-    } else if (h->getToolType() == TOOL_SELECT_RECT || h->getToolType() == TOOL_SELECT_REGION ||
-               h->getToolType() == TOOL_SELECT_MULTILAYER_RECT || h->getToolType() == TOOL_SELECT_MULTILAYER_REGION ||
-               h->getToolType() == TOOL_PLAY_OBJECT || h->getToolType() == TOOL_SELECT_OBJECT ||
-               h->getToolType() == TOOL_SELECT_PDF_TEXT_LINEAR || h->getToolType() == TOOL_SELECT_PDF_TEXT_RECT) {
-        if (h->getToolType() == TOOL_SELECT_RECT) {
+    } else if (hToolType == TOOL_SELECT_RECT || hToolType == TOOL_SELECT_REGION ||
+               hToolType == TOOL_ZOOM_RECT ||
+               hToolType == TOOL_SELECT_MULTILAYER_RECT || hToolType == TOOL_SELECT_MULTILAYER_REGION ||
+               hToolType == TOOL_PLAY_OBJECT || hToolType == TOOL_SELECT_OBJECT ||
+               hToolType == TOOL_SELECT_PDF_TEXT_LINEAR || hToolType == TOOL_SELECT_PDF_TEXT_RECT) {
+        if (hToolType == TOOL_ZOOM_RECT) {
+            g_debug("%s:%d  TOOL_ZOOM_RECT selector?=%d", __FILE__, __LINE__,
+                int(!!selector));
+            if (!selector) {
+                selector = std::make_unique<RectangularSelector>(x, y);
+                overlayViews.emplace_back(std::make_unique<xoj::view::SelectorView>(
+                        selector.get(), this, settings->getSelectionColor()));
+            }
+        } else if (hToolType == TOOL_SELECT_RECT) {
             if (!selector) {
                 this->selector = std::make_unique<RectangularSelector>(x, y);
                 this->overlayViews.emplace_back(std::make_unique<xoj::view::SelectorView>(
@@ -339,7 +349,7 @@ auto XojPageView::onButtonPressEvent(const PositionInputData& pos) -> bool {
                         "the selection has already been created by a stylus button press while the stylus was "
                         "hovering!");
             }
-        } else if (h->getToolType() == TOOL_SELECT_REGION) {
+        } else if (hToolType == TOOL_SELECT_REGION) {
             if (!selector) {
                 this->selector = std::make_unique<LassoSelector>(x, y);
                 this->overlayViews.emplace_back(std::make_unique<xoj::view::SelectorView>(
@@ -350,7 +360,7 @@ auto XojPageView::onButtonPressEvent(const PositionInputData& pos) -> bool {
                         "the selection has already been created by a stylus button press while the stylus was "
                         "hovering!");
             }
-        } else if (h->getToolType() == TOOL_SELECT_MULTILAYER_RECT) {
+        } else if (hToolType == TOOL_SELECT_MULTILAYER_RECT) {
             if (!selector) {
                 this->selector = std::make_unique<RectangularSelector>(x, y, /*multiLayer*/ true);
                 this->overlayViews.emplace_back(std::make_unique<xoj::view::SelectorView>(
@@ -361,7 +371,7 @@ auto XojPageView::onButtonPressEvent(const PositionInputData& pos) -> bool {
                         "the selection has already been created by a stylus button press while the stylus was "
                         "hovering!");
             }
-        } else if (h->getToolType() == TOOL_SELECT_MULTILAYER_REGION) {
+        } else if (hToolType == TOOL_SELECT_MULTILAYER_REGION) {
             if (!selector) {
                 this->selector = std::make_unique<LassoSelector>(x, y, /*multiLayer*/ true);
                 this->overlayViews.emplace_back(std::make_unique<xoj::view::SelectorView>(
@@ -372,7 +382,7 @@ auto XojPageView::onButtonPressEvent(const PositionInputData& pos) -> bool {
                         "the selection has already been created by a stylus button press while the stylus was "
                         "hovering!");
             }
-        } else if (h->getToolType() == TOOL_SELECT_PDF_TEXT_LINEAR || h->getToolType() == TOOL_SELECT_PDF_TEXT_RECT) {
+        } else if (hToolType == TOOL_SELECT_PDF_TEXT_LINEAR || hToolType == TOOL_SELECT_PDF_TEXT_RECT) {
             // so if we selected something && the pdf selection toolbox is hidden && we hit within the selection
             // we could call the pdf floating toolbox again
             auto* pdfToolbox = control->getWindow()->getPdfToolbox();
@@ -389,19 +399,19 @@ auto XojPageView::onButtonPressEvent(const PositionInputData& pos) -> bool {
             }
 
             if (this->page->getPdfPageNr() != npos && !pdfToolbox->hasSelection()) {
-                pdfToolbox->selectionStyle = PdfElemSelection::selectionStyleForToolType(h->getToolType());
+                pdfToolbox->selectionStyle = PdfElemSelection::selectionStyleForToolType(hToolType);
                 auto sel = pdfToolbox->newSelection(x, y);
                 this->overlayViews.emplace_back(
                         std::make_unique<xoj::view::PdfElementSelectionView>(sel, this, settings->getSelectionColor()));
             }
-        } else if (h->getToolType() == TOOL_SELECT_OBJECT) {
+        } else if (hToolType == TOOL_SELECT_OBJECT) {
             SelectObject select(this);
             if (pos.isShiftDown() && xournal->getSelection()) {
                 select.atAggregate(x, y);
             } else {
                 select.at(x, y);
             }
-        } else if (h->getToolType() == TOOL_PLAY_OBJECT) {
+        } else if (hToolType == TOOL_PLAY_OBJECT) {
             PlayObject play(this);
             play.at(x, y);
             if (play.playbackStatus) {
@@ -412,12 +422,12 @@ auto XojPageView::onButtonPressEvent(const PositionInputData& pos) -> bool {
                 }
             }
         }
-    } else if (h->getToolType() == TOOL_TEXT) {
+    } else if (hToolType == TOOL_TEXT) {
         startText(x, y);
-    } else if (h->getToolType() == TOOL_LATEX) {
+    } else if (hToolType == TOOL_LATEX) {
         /* The latex dialog will be opened only at the onButtonReleaseEvent. */
         this->inLatex = true;
-    } else if (h->getToolType() == TOOL_IMAGE) {
+    } else if (hToolType == TOOL_IMAGE) {
         // start selecting the size for the image
         this->imageSizeSelection = std::make_unique<ImageSizeSelection>(x, y);
         this->overlayViews.emplace_back(std::make_unique<xoj::view::ImageSizeSelectionView>(
@@ -687,12 +697,12 @@ auto XojPageView::onButtonReleaseEvent(const PositionInputData& pos) -> bool {
     currentSequenceDeviceId.reset();
 
     Control* control = xournal->getControl();
+    ToolHandler* h = control->getToolHandler();
 
     if (this->inputHandler) {
         double zoom = xournal->getZoom();
         this->inputHandler->onButtonReleaseEvent(pos, zoom);
 
-        ToolHandler* h = control->getToolHandler();
         bool isDrawingTypeSpline = h->getDrawingType() == DRAWING_TYPE_SPLINE;
         if (!isDrawingTypeSpline || !this->inputHandler->getStroke()) {  // The Spline Tool finalizes drawing manually
             xoj_assert(hasNoViewOf(overlayViews, inputHandler.get()));
@@ -756,7 +766,10 @@ auto XojPageView::onButtonReleaseEvent(const PositionInputData& pos) -> bool {
         }
     }
 
-    if (this->selector) {
+    if (selector && h->getToolType() == TOOL_ZOOM_RECT) {
+       g_debug("yotam - implemet zoom here!\n");
+       control->selectTool(h->getPreviousActiveTool()->getToolType());
+    } else if (this->selector) {
         const bool aggregate = pos.isShiftDown() && xournal->getSelection();
         size_t layerOfFinalizedSel = this->selector->finalize(this->page, aggregate, control->getDocument());
 
